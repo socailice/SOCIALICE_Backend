@@ -7,3 +7,4 @@ passlib[bcrypt]  # password hashing
 python-multipart  # for form data parsing (if you have file uploads or forms)
 python-dotenv          # load environment variables from .env
 pydantic-settings>=2.0  # for managing settings
+jwt
