@@ -133,7 +133,7 @@ async def handle_hammer(data: HammerRequest, db=Depends(get_db)):
 
     await db["hammers"].update_one(
         {"postId": ObjectId(data.post_id)},
-        {"$set": {"hammered_by": hammered_by}},
+        {"$set": {"hammered_by": hammered_by,"userId": post["userId"]}},
         upsert=True
     )
 

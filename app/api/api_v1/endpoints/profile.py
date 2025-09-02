@@ -69,6 +69,15 @@ async def get_profile(user_id: str, current_user_id: Optional[str] = Query(None)
                 is_socialiced = "pending"  # Or use a boolean flag is_pending=True
             else:
                 is_socialiced = False
+    pipeline = [
+    {"$match": {"userId": user_id}},  # filter posts by userId
+    {"$project": {"hammer_count": {"$size": "$hammered_by"}}},  # count array size
+    {"$group": {"_id": None, "total_hammers": {"$sum": "$hammer_count"}}}  # sum counts
+    ]
+
+    result = await db["hammers"].aggregate(pipeline).to_list(length=1)
+
+    total_hammers = result[0]["total_hammers"] if result else 0
 
     profile_data = {
         "_Id": str(user["_id"]),
@@ -78,7 +87,7 @@ async def get_profile(user_id: str, current_user_id: Optional[str] = Query(None)
         "isSocialiced": is_socialiced,
         "stats": {
             "socialiced": len(user.get("friends", [])),
-            "hammers": await db.posts.count_documents({"user_id": user_id})
+            "hammers": total_hammers
         },
         "posts": posts
     }
